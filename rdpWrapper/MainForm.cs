@@ -19,11 +19,11 @@ namespace rdpWrapper {
     private readonly Timer refreshTimer;
     private readonly Logger logger;
     private readonly Wrapper wrapper;
-    private readonly PersistentSettings settings;
+    private readonly LocalSettings settings;
     private SupportedWrappers preferredWrapper;
-    private readonly UserOption showAntivirusWarn;
-    private readonly UserOption addDefenderExclusion;
-    private readonly UserOption setFirewallRule;
+    private readonly LocalUserOption showAntivirusWarn;
+    private readonly LocalUserOption addDefenderExclusion;
+    private readonly LocalUserOption setFirewallRule;
 
     public MainForm() {
 
@@ -37,25 +37,25 @@ namespace rdpWrapper {
         title += "/" + sysArch;
       Text = title;
 
-      settings = new PersistentSettings();
+      settings = new LocalSettings();
       settings.Load();
       InitializeTheme();
 
       var sizeSpan = Height - ClientSize.Height;
       MinimumSize = new Size { Width = Width, Height = sizeSpan + gbxGeneralSettings.Height + gbxStatus.Height + mainMenu.Height };
 
-      var showLog = new UserOption("showLog", true, showLogToolStripMenuItem, settings);
+      var showLog = new LocalUserOption("showLog", true, showLogToolStripMenuItem, settings);
       showLog.Changed += delegate {
         SetLogVisible(showLogToolStripMenuItem.Checked);
       };
       SetLogVisible(showLog.Value);
-      var portable = new UserOption("portable", false, storeSeiingsInFileToolStripMenuItem, settings);
+      var portable = new LocalUserOption("portable", false, storeSeiingsInFileToolStripMenuItem, settings);
       portable.Changed += delegate {
         settings.IsPortable = portable.Value;
       };
-      showAntivirusWarn = new UserOption("showAntivirusWarn", true, showAntivirusWarnMenuItem, settings);
-      addDefenderExclusion = new UserOption("addDefenderExclusion", true, addDefenderExclusionMenuItem, settings);
-      setFirewallRule = new UserOption("setFirewallRule", true, addFirewallRuleMenuItem, settings);
+      showAntivirusWarn = new LocalUserOption("showAntivirusWarn", true, showAntivirusWarnMenuItem, settings);
+      addDefenderExclusion = new LocalUserOption("addDefenderExclusion", true, addDefenderExclusionMenuItem, settings);
+      setFirewallRule = new LocalUserOption("setFirewallRule", true, addFirewallRuleMenuItem, settings);
 
       if (!Enum.TryParse(settings.GetValue("preferredWrapper", "TermWrap"), out preferredWrapper)){
         preferredWrapper = SupportedWrappers.TermWrap;

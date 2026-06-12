@@ -105,7 +105,7 @@ namespace rdpWrapper {
           }
           case "-install": {
             var wrapper = new Wrapper(logger);
-            var settings = new PersistentSettings();
+            var settings = new LocalSettings();
             settings.Load();
             if (!Enum.TryParse(settings.GetValue("preferredWrapper", "TermWrap"), out SupportedWrappers preferredWrapper)) {
               preferredWrapper = SupportedWrappers.TermWrap;
