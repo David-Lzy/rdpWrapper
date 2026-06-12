@@ -258,22 +258,15 @@ namespace rdpWrapper {
 
     private void InitializeTheme() {
 
-      ToolStripRadioButtonMenuItem.DisplayAsCheckboxes = true;
-      mainMenu.Renderer = new ThemedToolStripRenderer();
-
-      var currentItem = CustomTheme.FillThemesMenu((title, theme, onClick) => {
-        if (theme == null && onClick == null) {
-          themeMenuItem.DropDownItems.Add(title);
-          return null;
-        }
-        var item = new ToolStripRadioButtonMenuItem(title, null, onClick);
-        themeMenuItem.DropDownItems.Add(item);
-        return item;
-      }, () => {
-        settings.SetValue("theme", Theme.IsAutoThemeEnabled ? "auto" : Theme.Current.Id);
-      }, settings.GetValue("theme", "auto"), "rdpWrapper.themes");
-      currentItem?.PerformClick();
-      Theme.Current.Apply(this);
+      try {
+        ToolStripRadioButtonMenuItem.DisplayAsCheckboxes = true;
+        mainMenu.Renderer = new ThemedToolStripRenderer();
+        themeMenuItem.DropDownItems.Add("Default").Enabled = false;
+        Theme.Current.Apply(this);
+      }
+      catch (NotImplementedException) {
+        themeMenuItem.Enabled = false;
+      }
     }
 
     private void btnRestartService_Click(object sender, EventArgs e) {
