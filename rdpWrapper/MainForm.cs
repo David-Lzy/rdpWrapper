@@ -61,12 +61,17 @@ namespace rdpWrapper {
         preferredWrapper = SupportedWrappers.TermWrap;
       }
       foreach (SupportedWrappers wrap in Enum.GetValues(typeof(SupportedWrappers))) {
-        var menuItem = new ToolStripRadioButtonMenuItem(wrap.ToString(), null, (sender, _) => {
-          if (sender is not ToolStripRadioButtonMenuItem menuItem || !Enum.TryParse(menuItem.Text, out preferredWrapper))
+        var menuItem = new ToolStripMenuItem(wrap.ToString(), null, (sender, _) => {
+          if (sender is not ToolStripMenuItem menuItem || !Enum.TryParse(menuItem.Text, out preferredWrapper))
             return;
           settings.SetValue("preferredWrapper", preferredWrapper.ToString());
+          foreach (ToolStripItem item in wrapperToInstallMenuItem.DropDownItems) {
+            if (item is ToolStripMenuItem wrapperItem)
+              wrapperItem.Checked = false;
+          }
           menuItem.Checked = true;
         });
+        menuItem.CheckOnClick = false;
         wrapperToInstallMenuItem.DropDownItems.Add(menuItem);
         if (wrap == preferredWrapper)
           menuItem.Checked = true;
@@ -259,7 +264,6 @@ namespace rdpWrapper {
     private void InitializeTheme() {
 
       try {
-        ToolStripRadioButtonMenuItem.DisplayAsCheckboxes = true;
         mainMenu.Renderer = new ThemedToolStripRenderer();
         themeMenuItem.DropDownItems.Add("Default").Enabled = false;
         Theme.Current.Apply(this);
