@@ -45,10 +45,7 @@ jobs:
       - name: Prepare artifacts
         shell: powershell
         run: |
-          $source = "rdpWrapper/bin/Obfuscated"
-          if (-not (Test-Path $source)) {
-            $source = "rdpWrapper/bin"
-          }
+          $source = "rdpWrapper/bin"
 
           $dest = "artifacts"
           New-Item -ItemType Directory -Force -Path $dest | Out-Null
