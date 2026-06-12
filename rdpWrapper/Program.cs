@@ -51,19 +51,12 @@ namespace rdpWrapper {
         logger.Log($"{Updater.ApplicationTitle} {typeof(Program).Assembly.GetName().Version.ToString(3)} {(Environment.Is64BitProcess ? "x64" : "x32")}", Logger.StateKind.Info);
       }
 
-      if (!OSHelper.IsCompatible(true, out var errorMessage, out var fixAction)) {
+      if (!IsCompatible(out var errorMessage)) {
         if (consoleMode) {
           logger.Log(errorMessage, Logger.StateKind.Error);
         }
         else {
-          if (fixAction != null) {
-            if (MessageBox.Show(errorMessage, Updater.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) {
-              fixAction();
-            }
-          }
-          else {
-            MessageBox.Show(errorMessage, Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-          }
+          MessageBox.Show(errorMessage, Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         Environment.Exit(0);
       }
@@ -183,6 +176,17 @@ namespace rdpWrapper {
         Application.Exit();
       };
       Application.Run(form);
+    }
+
+    private static bool IsCompatible(out string errorMessage) {
+      var version = Environment.OSVersion.Version;
+      if (version.Major > 6 || version.Major == 6 && version.Minor >= 1) {
+        errorMessage = null;
+        return true;
+      }
+
+      errorMessage = "Windows 7 / Server 2008 R2 or later is required.";
+      return false;
     }
 
     private static void AddToLog(string message, Logger.StateKind state, bool newLine) {

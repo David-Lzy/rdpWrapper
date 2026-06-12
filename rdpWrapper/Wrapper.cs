@@ -340,6 +340,20 @@ namespace rdpWrapper {
     internal readonly string TermSrvFile;
     internal readonly string WrapperFolderPath;
 
+    internal bool IsWindowsServer {
+      get {
+        try {
+          using (var key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\ProductOptions")) {
+            var productType = key?.GetValue("ProductType") as string;
+            return !string.Equals(productType, "WinNT", StringComparison.OrdinalIgnoreCase);
+          }
+        }
+        catch {
+          return false;
+        }
+      }
+    }
+
     internal WrapperInstalledState CheckWrapperInstalled() {
       WrapperPath = string.Empty;
       try {
