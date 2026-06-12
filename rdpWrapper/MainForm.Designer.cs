@@ -82,7 +82,7 @@ namespace rdpWrapper {
       this.checkFoNewVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-      this.txtLog = new sergiye.Common.SimplTextBox();
+      this.txtLog = new System.Windows.Forms.RichTextBox();
       ((System.ComponentModel.ISupportInitialize)(this.numRDPPort)).BeginInit();
       this.gbxGeneralSettings.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.numMaxConnections)).BeginInit();
@@ -754,7 +754,7 @@ namespace rdpWrapper {
     private Label lblWrapperState;
     private TextBox txtServiceVersion;
     private Button btnGenerate;
-    private sergiye.Common.SimplTextBox txtLog;
+    private RichTextBox txtLog;
     private Button btnInstall;
     private MenuStrip mainMenu;
     private ToolStripMenuItem fileToolStripMenuItem;

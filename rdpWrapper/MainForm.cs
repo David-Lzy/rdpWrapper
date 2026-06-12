@@ -621,16 +621,16 @@ namespace rdpWrapper {
       }
 
       if (newLine)
-        txtLog.AppendLine($"{DateTime.Now:T} - ", ForegroundColor);
+        AppendLog($"{DateTime.Now:T} - ", ForegroundColor);
       switch (state) {
         case Logger.StateKind.Error:
-          txtLog.AppendLine(message, WarnColor, false);
+          AppendLog(message, WarnColor, false);
           break;
         case Logger.StateKind.Info:
-          txtLog.AppendLine(message, MessageColor, false);
+          AppendLog(message, MessageColor, false);
           break;
         default:
-          txtLog.AppendLine(message, ForegroundColor, false);
+          AppendLog(message, ForegroundColor, false);
           break;
       }
 
@@ -638,6 +638,14 @@ namespace rdpWrapper {
       //   File.AppendAllText(_logFileName, $"{DateTime.Now:T} - {message}\n");
       txtLog.ScrollToCaret();
       Application.DoEvents();
+    }
+
+    private void AppendLog(string message, Color color, bool appendNewLine = true) {
+      txtLog.SelectionStart = txtLog.TextLength;
+      txtLog.SelectionLength = 0;
+      txtLog.SelectionColor = color;
+      txtLog.AppendText(message + (appendNewLine ? Environment.NewLine : string.Empty));
+      txtLog.SelectionColor = txtLog.ForeColor;
     }
 
     private void btnInstall_Click(object sender, EventArgs e) {
