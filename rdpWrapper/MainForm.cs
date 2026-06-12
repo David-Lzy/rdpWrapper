@@ -24,6 +24,10 @@ namespace rdpWrapper {
     private readonly LocalUserOption showAntivirusWarn;
     private readonly LocalUserOption addDefenderExclusion;
     private readonly LocalUserOption setFirewallRule;
+    private static Color ForegroundColor => SystemColors.ControlText;
+    private static Color InfoColor => Color.DarkGoldenrod;
+    private static Color MessageColor => Color.Green;
+    private static Color WarnColor => Color.Red;
 
     public MainForm() {
 
@@ -266,7 +270,7 @@ namespace rdpWrapper {
       try {
         mainMenu.Renderer = new ThemedToolStripRenderer();
         themeMenuItem.DropDownItems.Add("Default").Enabled = false;
-        Theme.Current.Apply(this);
+
       }
       catch (NotImplementedException) {
         themeMenuItem.Enabled = false;
@@ -297,19 +301,19 @@ namespace rdpWrapper {
       switch (wrapperInstalled) {
         case WrapperInstalledState.Unknown:
           lblWrapperStateValue.Text = "Unknown";
-          lblWrapperStateValue.ForeColor = Theme.Current.InfoColor;
+          lblWrapperStateValue.ForeColor = InfoColor;
           uninstallMenuItem.Enabled = installMenuItem.Enabled = btnInstall.Enabled = btnInstall.Visible = false;
           break;
         case WrapperInstalledState.NotInstalled:
           lblWrapperStateValue.Text = "Not installed";
-          lblWrapperStateValue.ForeColor = Theme.Current.InfoColor;
+          lblWrapperStateValue.ForeColor = InfoColor;
           installMenuItem.Enabled = btnInstall.Enabled = btnInstall.Visible = true;
           uninstallMenuItem.Enabled = false;
           btnInstall.Text = "Install";
           break;
         case WrapperInstalledState.RdpWrap:
           lblWrapperStateValue.Text = "RdpWrap";
-          lblWrapperStateValue.ForeColor = Theme.Current.MessageColor;
+          lblWrapperStateValue.ForeColor = MessageColor;
           string wrapperIniPath = null;
           if (!wrapper.WrapperPath.IsNullOrEmpty()) {
             var wrappedDir = Path.GetDirectoryName(wrapper.WrapperPath);
@@ -328,12 +332,12 @@ namespace rdpWrapper {
           break;
         case WrapperInstalledState.ThirdParty:
           lblWrapperStateValue.Text = "3rd-party";
-          lblWrapperStateValue.ForeColor = Theme.Current.WarnColor;
+          lblWrapperStateValue.ForeColor = WarnColor;
           uninstallMenuItem.Enabled = installMenuItem.Enabled = btnInstall.Enabled = btnInstall.Visible = false;
           break;
         case WrapperInstalledState.TermWrap:
           lblWrapperStateValue.Text = "TermWrap";
-          lblWrapperStateValue.ForeColor = Theme.Current.MessageColor;
+          lblWrapperStateValue.ForeColor = MessageColor;
           checkSupported = null;
           wrapperIniLastChecked = DateTime.MinValue;
           wrapperIniLastPath = null;
@@ -346,65 +350,65 @@ namespace rdpWrapper {
       switch (wrapper.GetServiceState()) {
         case ServiceControllerStatus.Stopped:
           lblServiceStateValue.Text = "Stopped";
-          lblServiceStateValue.ForeColor = Theme.Current.WarnColor;
+          lblServiceStateValue.ForeColor = WarnColor;
           break;
         case ServiceControllerStatus.StartPending:
           lblServiceStateValue.Text = "Starting..";
-          lblServiceStateValue.ForeColor = Theme.Current.ForegroundColor;
+          lblServiceStateValue.ForeColor = ForegroundColor;
           break;
         case ServiceControllerStatus.StopPending:
           lblServiceStateValue.Text = "Stopping...";
-          lblServiceStateValue.ForeColor = Theme.Current.ForegroundColor;
+          lblServiceStateValue.ForeColor = ForegroundColor;
           break;
         case ServiceControllerStatus.Running:
           lblServiceStateValue.Text = "Running";
-          lblServiceStateValue.ForeColor = Theme.Current.MessageColor;
+          lblServiceStateValue.ForeColor = MessageColor;
           break;
         case ServiceControllerStatus.ContinuePending:
           lblServiceStateValue.Text = "Resuming...";
-          lblServiceStateValue.ForeColor = Theme.Current.ForegroundColor;
+          lblServiceStateValue.ForeColor = ForegroundColor;
           break;
         case ServiceControllerStatus.PausePending:
           lblServiceStateValue.Text = "Suspending...";
-          lblServiceStateValue.ForeColor = Theme.Current.ForegroundColor;
+          lblServiceStateValue.ForeColor = ForegroundColor;
           break;
         case ServiceControllerStatus.Paused:
           lblServiceStateValue.Text = "Suspended";
-          lblServiceStateValue.ForeColor = Theme.Current.ForegroundColor;
+          lblServiceStateValue.ForeColor = ForegroundColor;
           break;
         default:
           lblServiceStateValue.Text = "Unknown";
-          lblServiceStateValue.ForeColor = Theme.Current.ForegroundColor;
+          lblServiceStateValue.ForeColor = ForegroundColor;
           break;
       }
 
       if (WinStationHelper.IsListenerWorking()){
         lblListenerStateValue.Text = "Listening";
-        lblListenerStateValue.ForeColor = Theme.Current.MessageColor;
+        lblListenerStateValue.ForeColor = MessageColor;
       }
       else {
         lblListenerStateValue.Text = "Not listening";
-        lblListenerStateValue.ForeColor = Theme.Current.WarnColor;
+        lblListenerStateValue.ForeColor = WarnColor;
       }
 
       if (wrapper.WrapperPath.IsNullOrEmpty() || !File.Exists(wrapper.WrapperPath)) {
         lblWrapperVersion.Text = "N/A";
-        lblWrapperVersion.ForeColor = Theme.Current.WarnColor;
+        lblWrapperVersion.ForeColor = WarnColor;
       }
       else {
         var versionInfo = FileVersionInfo.GetVersionInfo(wrapper.WrapperPath);
         lblWrapperVersion.Text = Wrapper.GetVersionString(versionInfo);
-        lblWrapperVersion.ForeColor = Theme.Current.ForegroundColor;
+        lblWrapperVersion.ForeColor = ForegroundColor;
       }
 
       if (!File.Exists(wrapper.TermSrvFile)) {
         txtServiceVersion.Text = "N/A";
-        txtServiceVersion.ForeColor = Theme.Current.WarnColor;
+        txtServiceVersion.ForeColor = WarnColor;
       }
       else {
         var versionInfo = FileVersionInfo.GetVersionInfo(wrapper.TermSrvFile);
         txtServiceVersion.Text = Wrapper.GetVersionString(versionInfo);
-        txtServiceVersion.ForeColor = Theme.Current.ForegroundColor;
+        txtServiceVersion.ForeColor = ForegroundColor;
 
 #if LITEVERSION
         btnGenerate.Visible = false;
@@ -416,7 +420,7 @@ namespace rdpWrapper {
           if (versionInfo.FileMajorPart == 6 && versionInfo.FileMinorPart == 0 ||
               versionInfo.FileMajorPart == 6 && versionInfo.FileMinorPart == 1) {
             lblSupported.Text = "[supported partially]";
-            lblSupported.ForeColor = Theme.Current.InfoColor;
+            lblSupported.ForeColor = InfoColor;
           }
           else {
             var lastModified = File.GetLastWriteTime(wrapperIniLastPath);
@@ -427,16 +431,16 @@ namespace rdpWrapper {
             }
             if (wrapperIniLastSupported) {
               lblSupported.Text = "[fully supported]";
-              lblSupported.ForeColor = Theme.Current.MessageColor;
+              lblSupported.ForeColor = MessageColor;
               return;
             }
           }
           lblSupported.Text = "[not supported]";
-          lblSupported.ForeColor = Theme.Current.WarnColor;
+          lblSupported.ForeColor = WarnColor;
         }
         else if (!checkSupported.HasValue) {
           lblSupported.Text = "[supported]";
-          lblSupported.ForeColor = Theme.Current.MessageColor;
+          lblSupported.ForeColor = MessageColor;
         }
       }
     }
@@ -617,16 +621,16 @@ namespace rdpWrapper {
       }
 
       if (newLine)
-        txtLog.AppendLine($"{DateTime.Now:T} - ", Theme.Current.ForegroundColor);
+        txtLog.AppendLine($"{DateTime.Now:T} - ", ForegroundColor);
       switch (state) {
         case Logger.StateKind.Error:
-          txtLog.AppendLine(message, Theme.Current.WarnColor, false);
+          txtLog.AppendLine(message, WarnColor, false);
           break;
         case Logger.StateKind.Info:
-          txtLog.AppendLine(message, Theme.Current.MessageColor, false);
+          txtLog.AppendLine(message, MessageColor, false);
           break;
         default:
-          txtLog.AppendLine(message, Theme.Current.ForegroundColor, false);
+          txtLog.AppendLine(message, ForegroundColor, false);
           break;
       }
 
