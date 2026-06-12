@@ -31,7 +31,12 @@ namespace rdpWrapper {
     [STAThread]
     private static void Main(string[] args) {
 
-      Crasher.Listen();
+      try {
+        Crasher.Listen();
+      }
+      catch (NotImplementedException) {
+        // Some SergiyE.Common builds do not implement crash reporting for this target.
+      }
 
       // new Wrapper(new FileLogger()).EncryptResources();
       // return;
