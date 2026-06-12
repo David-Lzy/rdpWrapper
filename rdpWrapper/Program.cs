@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace rdpWrapper {
@@ -27,6 +28,7 @@ namespace rdpWrapper {
     private static int result = CodeOk; //lets be a bit optimistic
     //private static bool consoleAllocated;
     private static FileLogger logger;
+    private static Mutex singleInstanceMutex;
 
     [STAThread]
     private static void Main(string[] args) {
@@ -61,8 +63,8 @@ namespace rdpWrapper {
         Environment.Exit(0);
       }
 
-      if (WinApiHelper.CheckRunningInstances(true, true)) {
-        // fallback
+      singleInstanceMutex = new Mutex(true, @"Global\rdpWrapper", out var createdNew);
+      if (!createdNew) {
         MessageBox.Show($"{Updater.ApplicationName} is already running.", Updater.ApplicationName,
           MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         return;
