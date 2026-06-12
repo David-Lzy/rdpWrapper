@@ -1,0 +1,60 @@
+name: Manual build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: nuget/setup-nuget@v2
+
+      - uses: microsoft/setup-msbuild@v1.1
+        with:
+          msbuild-architecture: x64
+
+      - name: NuGet restore
+        run: nuget restore rdpWrapper.sln
+
+      - name: Build
+        run: |
+          msbuild rdpWrapper.sln /t:restore /p:RestorePackagesConfig=true /p:Configuration=Release /p:Platform="Any CPU"
+          msbuild rdpWrapper.sln /t:Rebuild /p:DebugType=None /p:Configuration=Release /p:Platform="Any CPU"
+          msbuild rdpWrapper.sln /t:Rebuild /p:DebugType=None /p:Configuration=ReleaseLite /p:Platform="Any CPU"
+          msbuild rdpWrapper.sln /t:restore /p:RestorePackagesConfig=true /p:Configuration=Release /p:Platform="x64"
+          msbuild rdpWrapper.sln /t:Rebuild /p:DebugType=None /p:Configuration=Release /p:Platform="x64"
+          msbuild rdpWrapper.sln /t:Rebuild /p:DebugType=None /p:Configuration=ReleaseLite /p:Platform="x64"
+          msbuild rdpWrapper.sln /t:restore /p:RestorePackagesConfig=true /p:Configuration=Release /p:Platform="x86"
+          msbuild rdpWrapper.sln /t:Rebuild /p:DebugType=None /p:Configuration=Release /p:Platform="x86"
+          msbuild rdpWrapper.sln /t:Rebuild /p:DebugType=None /p:Configuration=ReleaseLite /p:Platform="x86"
+
+      - name: Prepare artifacts
+        shell: powershell
+        run: |
+          $source = "rdpWrapper/bin/Obfuscated"
+          if (-not (Test-Path $source)) {
+            $source = "rdpWrapper/bin"
+          }
+
+          $dest = "artifacts"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+
+          Get-ChildItem -Path $source -Filter *.exe | ForEach-Object {
+            $exePath = $_.FullName
+            $exeName = $_.Name
+            $zipPath = Join-Path $dest ($_.BaseName + ".zip")
+
+            Copy-Item $exePath -Destination (Join-Path $dest $exeName)
+            Compress-Archive -Path $exePath -DestinationPath $zipPath -Force
+          }
+
+          Get-ChildItem $dest
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rdpWrapper-manual-build
+          path: artifacts/*
