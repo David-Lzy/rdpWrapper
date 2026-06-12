@@ -2,10 +2,21 @@ name: Manual build
 
 on:
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: Publish artifacts to a GitHub release
+        type: boolean
+        default: false
+      tag_name:
+        description: Release tag to create or update
+        required: false
+        default: manual-build
 
 jobs:
   build:
     runs-on: windows-2022
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -58,3 +69,12 @@ jobs:
         with:
           name: rdpWrapper-manual-build
           path: artifacts/*
+
+      - name: Publish release
+        if: inputs.publish_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag_name }}
+          name: ${{ inputs.tag_name }}
+          prerelease: true
+          files: artifacts/*
