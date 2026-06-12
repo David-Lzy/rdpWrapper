@@ -1,4 +1,4 @@
-﻿using sergiye.Common;
+using sergiye.Common;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -50,7 +50,7 @@ namespace rdpWrapper {
         //if (!AttachConsole(-1)) {
         //  consoleAllocated = AllocConsole();
         //}
-        logger.Log($"{Updater.ApplicationTitle} {typeof(Program).Assembly.GetName().Version.ToString(3)} {(Environment.Is64BitProcess ? "x64" : "x32")}", Logger.StateKind.Info);
+        logger.Log($"{AppInfo.ApplicationTitle} {typeof(Program).Assembly.GetName().Version.ToString(3)} {(Environment.Is64BitProcess ? "x64" : "x32")}", Logger.StateKind.Info);
       }
 
       if (!IsCompatible(out var errorMessage)) {
@@ -58,14 +58,14 @@ namespace rdpWrapper {
           logger.Log(errorMessage, Logger.StateKind.Error);
         }
         else {
-          MessageBox.Show(errorMessage, Updater.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          MessageBox.Show(errorMessage, AppInfo.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         Environment.Exit(0);
       }
 
       singleInstanceMutex = new Mutex(true, @"Global\rdpWrapper", out var createdNew);
       if (!createdNew) {
-        MessageBox.Show($"{Updater.ApplicationName} is already running.", Updater.ApplicationName,
+        MessageBox.Show($"{AppInfo.ApplicationName} is already running.", AppInfo.ApplicationName,
           MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         return;
       }
@@ -82,12 +82,6 @@ namespace rdpWrapper {
 
     private static void StartConsole(string[] args) {
       try {
-        // always check for an updated version of the application unless disabled by launch arguments
-        // "-offline" should be the LAST parameter
-        var offline = args.Any(a => a == "-offline");
-        if (!offline) {
-          Updater.CheckForUpdates(Updater.CheckUpdatesMode.NotifyOnNewVersion);
-        }
         switch (args[0]) {
           case "-help":
             //todo: show help with supported options

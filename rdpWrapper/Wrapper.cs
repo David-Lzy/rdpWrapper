@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -678,8 +678,8 @@ namespace rdpWrapper {
 
     private static Aes GetAes() {
       var aes = Aes.Create();
-      var salt = Encoding.UTF8.GetBytes(Updater.ApplicationTitle);
-      using (var keyDerivation = new Rfc2898DeriveBytes(Updater.ApplicationName, salt, 100_000, HashAlgorithmName.SHA256)) {
+      var salt = Encoding.UTF8.GetBytes(AppInfo.ApplicationTitle);
+      using (var keyDerivation = new Rfc2898DeriveBytes(AppInfo.ApplicationName, salt, 100_000, HashAlgorithmName.SHA256)) {
         aes.Key = keyDerivation.GetBytes(32);
         aes.IV = keyDerivation.GetBytes(16);
       }
@@ -690,7 +690,7 @@ namespace rdpWrapper {
 
 #if DEBUG
     public void EncryptResources() {
-      var externalsPath = Path.Combine(Path.GetDirectoryName(Updater.CurrentFileLocation), "../externals");
+      var externalsPath = Path.Combine(Path.GetDirectoryName(AppInfo.CurrentFileLocation), "../externals");
       var di = new DirectoryInfo(externalsPath);
       if (!di.Exists)
         return;
